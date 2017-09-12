@@ -34,16 +34,21 @@ else  {
 				code += convert(files[i],program.ns)+"\r\n";
 			}
 		}
-		
-		var ast = ugly.parse(code); // parse code and get the initial AST
-		ast.figure_out_scope();
-		var compressed=ast.transform(ugly.Compressor());
-		compressed.figure_out_scope();
-		compressed.compute_char_frequency();
-		compressed.mangle_names();
-	        var final_code = compressed.print_to_string(); // compressed code here
+		if(typeof ugly.parse != "undefined") {
+			var ast = ugly.parse(code); // parse code and get the initial AST
+			ast.figure_out_scope();
+			var compressed=ast.transform(ugly.Compressor());
+			compressed.figure_out_scope();
+			compressed.compute_char_frequency();
+			compressed.mangle_names();
+			var final_code = compressed.print_to_string(); // compressed code here
+		}
+		else {
+			var minified = ugly.minify(code); // compress the code
+			var final_code = minified.code; // compressed code here
+		}
         
-		fs.writeFileSync(program.output,final_code, program.encoding);
+		fs.writeFileSync(program.output, final_code, program.encoding);
 	}
 	
 	catch(err) {
